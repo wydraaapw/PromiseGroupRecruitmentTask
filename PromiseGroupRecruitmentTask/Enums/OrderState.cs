@@ -1,4 +1,4 @@
-namespace PromiseGroupRecruitmentTask;
+namespace PromiseGroupRecruitmentTask.Enums;
 
 public enum OrderState
 {
