@@ -1,23 +1,23 @@
 using System.Net.Sockets;
 using PromiseGroupRecruitmentTask.Enums;
-using PromiseGroupRecruitmentTask.Repository;
+using PromiseGroupRecruitmentTask.Repositories;
 
 namespace PromiseGroupRecruitmentTask;
 
 public class OrderService
 {
-    public IOrderRepository OrderRepository { get; set; }
+    private IOrderRepository _orderRepository;
 
     public OrderService(IOrderRepository orderRepository)
     {
-        OrderRepository = orderRepository;
+        _orderRepository = orderRepository;
     }
     
     public Order CreateNewOrder
     (double amount, string name, ClientType clientType, string address, PaymentType paymentType)
     {
-        Order order = new Order(OrderState.New, amount, name, clientType, address, paymentType);
-        OrderRepository.AddToRepository(order);
+        Order order = new Order(amount, name, clientType, address, paymentType);
+        _orderRepository.AddToRepository(order);
         return order;
     }
 
@@ -35,6 +35,6 @@ public class OrderService
 
     public List<Order> GetOrders()
     {
-        return OrderRepository.Orders;
+        return _orderRepository.GetAllOrders();
     }
 }
