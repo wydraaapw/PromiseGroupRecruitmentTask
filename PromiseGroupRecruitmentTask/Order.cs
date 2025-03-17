@@ -13,11 +13,11 @@ public class Order
     public string Address { get; set; }
     public PaymentType PaymentType { get; set; }
 
-    public Order(OrderState state, double amount, string name, ClientType clientType, string address, PaymentType paymentType)
+    public Order(double amount, string name, ClientType clientType, string address, PaymentType paymentType)
     {
         Id = _numberOfOrders;
         _numberOfOrders++;
-        State = state;
+        State = OrderState.New;
         Amount = amount;
         Name = name;
         ClientType = clientType;
