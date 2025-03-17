@@ -2,15 +2,15 @@ namespace PromiseGroupRecruitmentTask.Repositories;
 
 public class OrderRepository : IOrderRepository
 {
-    private List<Order> Orders = new();
+    private List<Order> _orders = new();
     public Order AddToRepository(Order order)
     {
-        Orders.Add(order);
+        _orders.Add(order);
         return order;
     }
 
     public List<Order> GetAllOrders()
     {
-        return Orders;
+        return _orders;
     }
 }
