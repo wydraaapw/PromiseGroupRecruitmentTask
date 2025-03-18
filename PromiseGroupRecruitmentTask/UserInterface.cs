@@ -23,10 +23,12 @@ public class UserInterface
             Console.WriteLine("2. Forward order to warehouse");
             Console.WriteLine("3. Forward order to dispatch");
             Console.WriteLine("4. View all orders");
-            Console.WriteLine("5. Exit");
+            Console.WriteLine("5. View orders with given state");
+            Console.WriteLine("6. Clear console");
+            Console.WriteLine("7. Exit");
             Console.WriteLine("==================================================================");
 
-            Console.Write("Choose option (1-5): ");
+            Console.Write("Choose option (1-7): ");
             string operation = Console.ReadLine();
             HandleOperation(operation);
         }
@@ -109,6 +111,24 @@ public class UserInterface
                 break;
             }
             case "5":
+            {
+                OrderState? orderState = GetInputOrderState();
+
+                if (orderState is null)
+                {
+                    Console.WriteLine("Invalid state number");
+                }
+                else
+                {
+                    DisplayOrdersForState(orderState);
+                }
+                
+                break;
+            }
+            case "6":
+                Console.Clear();
+                break;
+            case "7":
                 _isStopped = false;
                 break;
             default:
@@ -116,6 +136,8 @@ public class UserInterface
                 break;
         }
     }
+    
+    
 
     private OrderData GetOrderInputData()
     {
@@ -133,7 +155,7 @@ public class UserInterface
         return new OrderData(productName, amount, clientType, paymentType, address);
     }
     
-    public int? GetOrderIdInputByState(OrderState state, string action)
+    private int? GetOrderIdInputByState(OrderState state, string action)
     {
         IReadOnlyList<Order> orders = _orderService.GetOrdersByState(state);
     
@@ -159,5 +181,42 @@ public class UserInterface
     
         Console.WriteLine("Invalid id, it must be integer number");
         return null;
+    }
+    
+    private OrderState? GetInputOrderState()
+    {
+        
+        foreach (OrderState state in Enum.GetValues<OrderState>())
+        {
+            Console.WriteLine($"{(int)state} - {state}");
+                    
+        }
+        Console.Write("Choose order state: ");
+        
+        string stateId = Console.ReadLine();
+    
+        if (int.TryParse(stateId, out int stateNumber) && Enum.IsDefined(typeof(OrderState), stateNumber))
+        {
+            return (OrderState)stateNumber;
+        }
+    
+        return null;
+    }
+    
+    private void DisplayOrdersForState(OrderState? state)
+    {
+        IReadOnlyList<Order> orders = _orderService.GetOrdersByState(state);
+    
+        if (orders.Count > 0)
+        {
+            foreach (Order order in orders)
+            {
+                Console.WriteLine(order);
+            }
+        }
+        else
+        {
+            Console.WriteLine("No orders with given state");
+        }
     }
 }

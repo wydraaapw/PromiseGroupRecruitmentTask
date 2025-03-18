@@ -11,7 +11,7 @@ public interface IOrderService
     public ServiceResponse ForwardToDispatch(int? id);
     public Order SendForShipment(Order order);
     public IReadOnlyList<Order> GetOrders();
-    public IReadOnlyList<Order> GetOrdersByState(OrderState orderState);
+    public IReadOnlyList<Order> GetOrdersByState(OrderState? orderState);
     public Order? GetOrderById(int? id);    
     
 }

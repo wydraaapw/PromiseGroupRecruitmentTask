@@ -1,7 +1,6 @@
 using PromiseGroupRecruitmentTask.DTOs;
 using PromiseGroupRecruitmentTask.Enums;
 using PromiseGroupRecruitmentTask.Repositories;
-using PromiseGroupRecruitmentTask.Services;
 using PromiseGroupRecruitmentTask.Validators;
 
 
@@ -68,6 +67,7 @@ public class OrderService : IOrderService
         }
 
         order.State = OrderState.InShipping;
+        OrderDeliviery(order);
         
         return new ServiceResponse(
             true, 
@@ -88,7 +88,7 @@ public class OrderService : IOrderService
         return _orderRepository.GetAllOrders();
     }
 
-    public IReadOnlyList<Order> GetOrdersByState(OrderState orderState)
+    public IReadOnlyList<Order> GetOrdersByState(OrderState? orderState)
     {
         return _orderRepository.GetAllOrders().Where(order => order.State == orderState).ToList();
     }
@@ -100,4 +100,13 @@ public class OrderService : IOrderService
         return order;
     }
     
+    private void OrderDeliviery(Order order)
+    {
+        int ms = new Random().Next(4000, 5001);
+
+         Task.Delay(ms).ContinueWith(_ => 
+         { 
+             order.State = OrderState.Closed; 
+         });
+    }
 }
