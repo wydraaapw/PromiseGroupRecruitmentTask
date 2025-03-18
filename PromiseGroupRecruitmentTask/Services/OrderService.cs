@@ -31,10 +31,22 @@ public class OrderService : IOrderService
         return new ServiceResponse(false, orderData, validationResult.Message);
     }
 
-    public Order MoveToWareHouse(Order order)
+    public ServiceResponse MoveToWareHouse(int? id)
     {
+        Order? order = GetOrderById(id);
+        
+        if (order is null)
+        {
+            return new ServiceResponse(false, null, "Order with given id doesn't exist");
+        }
+
         order.State = OrderState.InWarehouse;
-        return order;
+        return new ServiceResponse(
+            true, 
+            new OrderData(order.ProductName, order.Amount.ToString(), order.ClientType.ToString(), 
+                order.PaymentType.ToString(), order.Address), 
+            $"Success - GetOrderById({id})"
+        );
     }
 
     public Order SendForShipment(Order order)
@@ -53,9 +65,11 @@ public class OrderService : IOrderService
         return _orderRepository.GetAllOrders().Where(order => order.State == orderState).ToList();
     }
 
-    public Order? GetOrderById(int id)
+    public Order? GetOrderById(int? id)
     {
-        return _orderRepository.GetAllOrders().FirstOrDefault(order => order.Id == id);
+        Order? order = _orderRepository.GetAllOrders().FirstOrDefault(order => order.Id == id);
+
+        return order;
     }
     
 }

@@ -7,11 +7,10 @@ public interface IOrderService
 {
     public ServiceResponse CreateNewOrder(OrderData orderData);
 
-    public Order MoveToWareHouse(Order order);
+    public ServiceResponse MoveToWareHouse(int? id);
     public Order SendForShipment(Order order);
     public List<Order> GetOrders();
     public List<Order> GetOrdersByState(OrderState orderState);
-    public Order? GetOrderById(int id);
-
-
+    public Order? GetOrderById(int? id);
+    
 }

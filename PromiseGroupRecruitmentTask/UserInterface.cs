@@ -47,21 +47,21 @@ public class UserInterface
                 }
                 break;
             case "2":
-                List<Order> newOrders = _orderService.GetOrdersByState(OrderState.New); // Only new orders can be moved to the warehouse
-                
-                if (newOrders.Count > 0)
+
+                int? inputId = GetIdOfOrderToMoveToWarehouse();
+
+                if (inputId is not null)
                 {
-                    foreach (Order order in newOrders)
-                    {
-                        Console.WriteLine(order);
-                    }
-                    Console.WriteLine("Enter order Id: ");
-                    string orderId = Console.ReadLine();
+                    ServiceResponse sr = _orderService.MoveToWareHouse(inputId);
                     
-                }
-                else
-                {
-                    Console.WriteLine("There are no new orders yet, only new orders can be moved to warehouse");
+                    if (sr.Success)
+                    {
+                        Console.WriteLine($"Order - {sr.OrderData} has been moved to warehouse");
+                    }
+                    else
+                    {
+                        Console.WriteLine(sr.Message);
+                    }
                 }
                 break;
             case "3":
@@ -94,6 +94,32 @@ public class UserInterface
 
         return new OrderData(productName, amount, clientType, paymentType, address);
     }
+
+    public int? GetIdOfOrderToMoveToWarehouse()
+    {
+        List<Order> newOrders = _orderService.GetOrdersByState(OrderState.New); // Only new orders can be moved to the warehouse
+        
+        if (newOrders.Count == 0)
+        {
+            Console.WriteLine("No new orders available, only new orders can be moved to warehouse.");
+            return null;
+        } 
+        
+        foreach (Order order in newOrders)
+        {
+            Console.WriteLine(order);
+        }
+        
+        Console.WriteLine("Enter order Id: ");
     
-    
+        string input = Console.ReadLine();
+
+        if (int.TryParse(input, out int id))
+        {
+            return id;
+        }
+        
+        Console.WriteLine("Invalid id, it must be integer number");
+        return null;
+    }
 }
