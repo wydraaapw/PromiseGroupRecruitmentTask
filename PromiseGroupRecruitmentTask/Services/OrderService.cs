@@ -39,13 +39,21 @@ public class OrderService : IOrderService
         {
             return new ServiceResponse(false, null, "Order with given id doesn't exist");
         }
+        
+        
+        if (order.Amount >= 2500 && order.PaymentType == PaymentType.Cash)
+        {
+            order.State = OrderState.Returned;
+            return new ServiceResponse(false, new OrderData(order.ProductName, order.Amount.ToString(), order.ClientType.ToString(),
+                order.PaymentType.ToString(), order.Address), "The order has been returned to the client.\nMaximum cash payment is 2500");
+        }
 
         order.State = OrderState.InWarehouse;
         
         return new ServiceResponse(
             true, 
-            new OrderData(order.ProductName, order.Amount.ToString(), order.ClientType.ToString(), 
-                order.PaymentType.ToString(), order.Address), 
+            new OrderData(order.ProductName, order.Amount.ToString(), order.ClientType.ToString(),
+                order.PaymentType.ToString(), order.Address),
             $"Success - GetOrderById({id})"
         );
     }
@@ -75,12 +83,12 @@ public class OrderService : IOrderService
         return order;
     }
 
-    public List<Order> GetOrders()
+    public IReadOnlyList<Order> GetOrders()
     {
         return _orderRepository.GetAllOrders();
     }
 
-    public List<Order> GetOrdersByState(OrderState orderState)
+    public IReadOnlyList<Order> GetOrdersByState(OrderState orderState)
     {
         return _orderRepository.GetAllOrders().Where(order => order.State == orderState).ToList();
     }

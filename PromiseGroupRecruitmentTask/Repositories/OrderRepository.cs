@@ -9,7 +9,7 @@ public class OrderRepository : IOrderRepository
         return order;
     }
 
-    public List<Order> GetAllOrders()
+    public IReadOnlyList<Order> GetAllOrders()
     {
         return _orders;
     }
