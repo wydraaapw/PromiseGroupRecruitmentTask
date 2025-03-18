@@ -9,7 +9,8 @@ public class Program
     {
         IOrderRepository orderRepository = new OrderRepository();
         OrderService orderService = new OrderService(orderRepository);
-        UserInterface userInterface = new UserInterface(orderService);
+        Validator validator = new Validator();
+        UserInterface userInterface = new UserInterface(orderService, validator);
         
         userInterface.Run();
     }

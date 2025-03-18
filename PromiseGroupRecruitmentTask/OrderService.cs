@@ -14,9 +14,9 @@ public class OrderService
     }
     
     public Order CreateNewOrder
-    (double amount, string name, ClientType clientType, string address, PaymentType paymentType)
+    (double amount, string productName, ClientType clientType, string address, PaymentType paymentType)
     {
-        Order order = new Order(amount, name, clientType, address, paymentType);
+        Order order = new Order(amount, productName, clientType, address, paymentType);
         _orderRepository.AddToRepository(order);
         return order;
     }
@@ -36,5 +36,15 @@ public class OrderService
     public List<Order> GetOrders()
     {
         return _orderRepository.GetAllOrders();
+    }
+
+    public List<Order> GetOrdersByState(OrderState orderState)
+    {
+        return _orderRepository.GetAllOrders().Where(order => order.State == orderState).ToList();
+    }
+
+    public Order? GetOrderById(int id)
+    {
+        return _orderRepository.GetAllOrders().FirstOrDefault(order => order.Id == id);
     }
 }
