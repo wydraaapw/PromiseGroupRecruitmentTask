@@ -1,8 +1,8 @@
 using PromiseGroupRecruitmentTask.DTOs;
 
-namespace PromiseGroupRecruitmentTask;
+namespace PromiseGroupRecruitmentTask.Validators;
 
-public class Validator
+public class Validator : IValidator
 {
     public ValidationResult ValidateCreateNewOrder(OrderData orderData)
     {

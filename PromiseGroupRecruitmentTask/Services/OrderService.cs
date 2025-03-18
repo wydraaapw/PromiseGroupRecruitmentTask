@@ -1,24 +1,34 @@
-using System.Net.Sockets;
+using PromiseGroupRecruitmentTask.DTOs;
 using PromiseGroupRecruitmentTask.Enums;
 using PromiseGroupRecruitmentTask.Repositories;
+using PromiseGroupRecruitmentTask.Services;
+using PromiseGroupRecruitmentTask.Validators;
 
-namespace PromiseGroupRecruitmentTask;
 
-public class OrderService
+namespace PromiseGroupRecruitmentTask.Services;
+
+public class OrderService : IOrderService
 {
     private IOrderRepository _orderRepository;
-
-    public OrderService(IOrderRepository orderRepository)
+    private IValidator _validator;
+    public OrderService(IOrderRepository orderRepository, IValidator validator)
     {
         _orderRepository = orderRepository;
+        _validator = validator;
     }
-    
-    public Order CreateNewOrder
-    (double amount, string productName, ClientType clientType, string address, PaymentType paymentType)
+
+    public ServiceResponse CreateNewOrder(OrderData orderData)
     {
-        Order order = new Order(amount, productName, clientType, address, paymentType);
-        _orderRepository.AddToRepository(order);
-        return order;
+        ValidationResult validationResult = _validator.ValidateCreateNewOrder(orderData);
+
+        if (validationResult.Success)
+        {
+            Order order = Order.CreateOrderFromOrderData(orderData);
+            _orderRepository.AddToRepository(order);
+            return new ServiceResponse(true, orderData, validationResult.Message);
+        }
+
+        return new ServiceResponse(false, orderData, validationResult.Message);
     }
 
     public Order MoveToWareHouse(Order order)
@@ -47,4 +57,5 @@ public class OrderService
     {
         return _orderRepository.GetAllOrders().FirstOrDefault(order => order.Id == id);
     }
+    
 }

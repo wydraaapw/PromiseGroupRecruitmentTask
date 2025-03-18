@@ -1,3 +1,3 @@
 namespace PromiseGroupRecruitmentTask.DTOs;
 
-public record ValidationResult(bool IsValid, string ErrorMessage);
+public record ValidationResult(bool Success, string Message);

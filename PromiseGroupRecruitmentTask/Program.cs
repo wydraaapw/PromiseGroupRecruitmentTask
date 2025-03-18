@@ -1,5 +1,6 @@
-﻿using PromiseGroupRecruitmentTask.Enums;
-using PromiseGroupRecruitmentTask.Repositories;
+﻿using PromiseGroupRecruitmentTask.Repositories;
+using PromiseGroupRecruitmentTask.Services;
+using PromiseGroupRecruitmentTask.Validators;
 
 namespace PromiseGroupRecruitmentTask;
 
@@ -8,9 +9,11 @@ public class Program
     public static void Main(string[] args)
     {
         IOrderRepository orderRepository = new OrderRepository();
-        OrderService orderService = new OrderService(orderRepository);
-        Validator validator = new Validator();
-        UserInterface userInterface = new UserInterface(orderService, validator);
+        IValidator validator = new Validator();
+        
+        IOrderService orderService = new OrderService(orderRepository, validator);
+        
+        UserInterface userInterface = new UserInterface(orderService);
         
         userInterface.Run();
     }

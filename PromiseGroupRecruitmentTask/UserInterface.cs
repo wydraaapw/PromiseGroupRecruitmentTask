@@ -1,17 +1,16 @@
 using PromiseGroupRecruitmentTask.DTOs;
 using PromiseGroupRecruitmentTask.Enums;
+using PromiseGroupRecruitmentTask.Services;
 
 namespace PromiseGroupRecruitmentTask;
 
 public class UserInterface
 {
-    private OrderService _orderService;
-    private Validator _validator;
-
-    public UserInterface(OrderService orderService, Validator validator)
+    private IOrderService _orderService;
+    
+    public UserInterface(IOrderService orderService)
     {
         _orderService = orderService;
-        _validator = validator;
     }
     
     public void Run()
@@ -36,8 +35,16 @@ public class UserInterface
         {
             case "1":
                 OrderData orderData = GetOrderInputData();
-                ValidationResult validationResult = _validator.ValidateCreateNewOrder(orderData);
-                HandleCreateNewOrder(orderData, validationResult);
+                ServiceResponse serviceResponse = _orderService.CreateNewOrder(orderData);
+
+                if (serviceResponse.Success)
+                {
+                    Console.WriteLine($"Order has been created ({orderData})");
+                }
+                else
+                {
+                    Console.WriteLine(serviceResponse.Message);
+                }
                 break;
             case "2":
                 List<Order> newOrders = _orderService.GetOrdersByState(OrderState.New); // Only new orders can be moved to the warehouse
@@ -56,10 +63,6 @@ public class UserInterface
                 {
                     Console.WriteLine("There are no new orders yet, only new orders can be moved to warehouse");
                 }
-                
-                
-                
-                
                 break;
             case "3":
                 Console.WriteLine("Choice =  3");
@@ -91,23 +94,6 @@ public class UserInterface
 
         return new OrderData(productName, amount, clientType, paymentType, address);
     }
-
-    private void HandleCreateNewOrder(OrderData orderData, ValidationResult validationResult)
-    {
-        if (validationResult.IsValid)
-        {
-            double parsedAmount = double.Parse(orderData.Amount);
-            ClientType typeOfClient = orderData.ClientType == "1" ? ClientType.Company : ClientType.Individual;
-            PaymentType typeOfPayment = orderData.PaymentType == "1" ? PaymentType.Card : PaymentType.Cash; 
-                    
-            Order order = _orderService.CreateNewOrder(parsedAmount, orderData.ProductName, typeOfClient, orderData.Address, typeOfPayment);
-                    
-            Console.WriteLine($"Order - {order} has been created");
-        }
-        else
-        {
-            Console.WriteLine(validationResult.ErrorMessage);
-        }
-    }
+    
     
 }
