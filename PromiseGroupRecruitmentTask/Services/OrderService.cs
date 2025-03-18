@@ -41,6 +41,26 @@ public class OrderService : IOrderService
         }
 
         order.State = OrderState.InWarehouse;
+        
+        return new ServiceResponse(
+            true, 
+            new OrderData(order.ProductName, order.Amount.ToString(), order.ClientType.ToString(), 
+                order.PaymentType.ToString(), order.Address), 
+            $"Success - GetOrderById({id})"
+        );
+    }
+
+    public ServiceResponse ForwardToDispatch(int? id)
+    {
+        Order? order = GetOrderById(id);
+
+        if (order is null)
+        {
+            return new ServiceResponse(false, null, "Order with given id doesn't exist");
+        }
+
+        order.State = OrderState.InShipping;
+        
         return new ServiceResponse(
             true, 
             new OrderData(order.ProductName, order.Amount.ToString(), order.ClientType.ToString(), 

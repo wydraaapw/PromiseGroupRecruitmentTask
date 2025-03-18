@@ -34,6 +34,7 @@ public class UserInterface
         switch (operation)
         {
             case "1":
+            {
                 OrderData orderData = GetOrderInputData();
                 ServiceResponse serviceResponse = _orderService.CreateNewOrder(orderData);
 
@@ -45,28 +46,47 @@ public class UserInterface
                 {
                     Console.WriteLine(serviceResponse.Message);
                 }
-                break;
-            case "2":
 
-                int? inputId = GetIdOfOrderToMoveToWarehouse();
+                break;
+            }
+            case "2":
+            {
+                int? inputId = GetOrderIdByState(OrderState.New, "moved to warehouse");
 
                 if (inputId is not null)
                 {
-                    ServiceResponse sr = _orderService.MoveToWareHouse(inputId);
-                    
-                    if (sr.Success)
+                    ServiceResponse serviceResponse = _orderService.MoveToWareHouse(inputId);
+
+                    if (serviceResponse.Success)
                     {
-                        Console.WriteLine($"Order - {sr.OrderData} has been moved to warehouse");
+                        Console.WriteLine($"Order - {serviceResponse.OrderData} has been moved to warehouse");
                     }
                     else
                     {
-                        Console.WriteLine(sr.Message);
+                        Console.WriteLine(serviceResponse.Message);
                     }
                 }
                 break;
+            }
             case "3":
-                Console.WriteLine("Choice =  3");
+            {
+                int? inputId = GetOrderIdByState(OrderState.InWarehouse, "forward to dispatch");
+
+                if (inputId is not null)
+                {
+                    ServiceResponse serviceResponse = _orderService.ForwardToDispatch(inputId);
+                    
+                    if (serviceResponse.Success)
+                    {
+                        Console.WriteLine($"Order - {serviceResponse.OrderData} has been forwarded to dispatch");
+                    }
+                    else
+                    {
+                        Console.WriteLine(serviceResponse.Message);
+                    }
+                }
                 break;
+            }
             case "4":
                 Console.WriteLine("Choice =  4");
                 break;
@@ -94,31 +114,31 @@ public class UserInterface
 
         return new OrderData(productName, amount, clientType, paymentType, address);
     }
-
-    public int? GetIdOfOrderToMoveToWarehouse()
+    
+    public int? GetOrderIdByState(OrderState state, string action)
     {
-        List<Order> newOrders = _orderService.GetOrdersByState(OrderState.New); // Only new orders can be moved to the warehouse
-        
-        if (newOrders.Count == 0)
+        List<Order> orders = _orderService.GetOrdersByState(state);
+    
+        if (orders.Count == 0)
         {
-            Console.WriteLine("No new orders available, only new orders can be moved to warehouse.");
+            Console.WriteLine($"No orders with state {state} available. Only orders with state {state} can be {action}.");
             return null;
         } 
-        
-        foreach (Order order in newOrders)
+    
+        foreach (Order order in orders)
         {
             Console.WriteLine(order);
         }
-        
-        Console.WriteLine("Enter order Id: ");
     
+        Console.WriteLine("Enter order Id: ");
+
         string input = Console.ReadLine();
 
         if (int.TryParse(input, out int id))
         {
             return id;
         }
-        
+    
         Console.WriteLine("Invalid id, it must be integer number");
         return null;
     }
