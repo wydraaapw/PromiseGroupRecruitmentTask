@@ -7,6 +7,7 @@ namespace PromiseGroupRecruitmentTask;
 public class UserInterface
 {
     private IOrderService _orderService;
+    private bool _isStopped = true;
     
     public UserInterface(IOrderService orderService)
     {
@@ -15,15 +16,17 @@ public class UserInterface
     
     public void Run()
     {
-        while (true)
+        while (_isStopped)
         {
+            Console.WriteLine("==================================================================");
             Console.WriteLine("1. Create new order");
             Console.WriteLine("2. Forward order to warehouse");
             Console.WriteLine("3. Forward order to dispatch");
             Console.WriteLine("4. View all orders");
             Console.WriteLine("5. Exit");
+            Console.WriteLine("==================================================================");
 
-            Console.Write("Choose number (1-5): ");
+            Console.Write("Choose option (1-5): ");
             string operation = Console.ReadLine();
             HandleOperation(operation);
         }
@@ -51,7 +54,7 @@ public class UserInterface
             }
             case "2":
             {
-                int? inputId = GetOrderIdByState(OrderState.New, "moved to warehouse");
+                int? inputId = GetOrderIdInputByState(OrderState.New, "moved to warehouse");
 
                 if (inputId is not null)
                 {
@@ -70,7 +73,7 @@ public class UserInterface
             }
             case "3":
             {
-                int? inputId = GetOrderIdByState(OrderState.InWarehouse, "forward to dispatch");
+                int? inputId = GetOrderIdInputByState(OrderState.InWarehouse, "forward to dispatch");
 
                 if (inputId is not null)
                 {
@@ -88,10 +91,25 @@ public class UserInterface
                 break;
             }
             case "4":
-                Console.WriteLine("Choice =  4");
+            {
+                IReadOnlyList<Order> orders = _orderService.GetOrders();
+
+                if (orders.Count() == 0)
+                {
+                    Console.WriteLine("There is no orders to show");
+                }
+                else
+                {
+                    foreach (Order order in orders)
+                    {
+                        Console.WriteLine(order);
+                    }
+                }
+
                 break;
+            }
             case "5":
-                Console.WriteLine("Choice =  5");
+                _isStopped = false;
                 break;
             default:
                 Console.WriteLine("Invalid option");
@@ -101,23 +119,23 @@ public class UserInterface
 
     private OrderData GetOrderInputData()
     {
-        Console.WriteLine("Enter product name: ");
+        Console.Write("Enter product name: ");
         string productName = Console.ReadLine();
-        Console.WriteLine("Enter amount of order: ");
+        Console.Write("Enter amount of order: ");
         string amount = Console.ReadLine();
-        Console.WriteLine("Choose client type:\n1 - Company\n2 - Individual");
+        Console.Write("Choose client type:\n1 - Company\n2 - Individual\n: ");
         string clientType = Console.ReadLine();
-        Console.WriteLine("Choose payment type:\n1 - Card\n2 - Cash");
+        Console.Write("Choose payment type:\n1 - Card\n2 - Cash\n: ");
         string paymentType = Console.ReadLine();
-        Console.WriteLine("Enter address: ");
+        Console.Write("Enter address: ");
         string address = Console.ReadLine();
 
         return new OrderData(productName, amount, clientType, paymentType, address);
     }
     
-    public int? GetOrderIdByState(OrderState state, string action)
+    public int? GetOrderIdInputByState(OrderState state, string action)
     {
-        List<Order> orders = _orderService.GetOrdersByState(state);
+        IReadOnlyList<Order> orders = _orderService.GetOrdersByState(state);
     
         if (orders.Count == 0)
         {
