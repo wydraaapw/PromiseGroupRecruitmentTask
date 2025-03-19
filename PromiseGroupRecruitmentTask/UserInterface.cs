@@ -170,7 +170,7 @@ public class UserInterface
             Console.WriteLine(order);
         }
     
-        Console.WriteLine("Enter order Id: ");
+        Console.Write("Enter order Id: ");
 
         string input = Console.ReadLine();
 
