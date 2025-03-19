@@ -143,7 +143,7 @@ public class UserInterface
     {
         Console.Write("Enter product name: ");
         string productName = Console.ReadLine();
-        Console.Write("Enter amount of order: ");
+        Console.Write("Enter amount of order (for example 5 or 5,50): ");
         string amount = Console.ReadLine();
         Console.Write("Choose client type:\n1 - Company\n2 - Individual\n: ");
         string clientType = Console.ReadLine();
