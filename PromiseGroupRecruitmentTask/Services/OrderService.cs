@@ -38,6 +38,11 @@ public class OrderService : IOrderService
         {
             return new ServiceResponse(false, null, "Order with given id doesn't exist");
         }
+
+        if (order.State != OrderState.New)
+        {
+            return new ServiceResponse(false, null, "Only orders new orders can be moved to warehouse");
+        }
         
         
         if (order.Amount >= 2500 && order.PaymentType == PaymentType.Cash)
@@ -64,6 +69,11 @@ public class OrderService : IOrderService
         if (order is null)
         {
             return new ServiceResponse(false, null, "Order with given id doesn't exist");
+        }
+
+        if (order.State != OrderState.InWarehouse)
+        {
+            return new ServiceResponse(false, null, "Only orders from warehouse can be forwarded to dispatch");
         }
 
         order.State = OrderState.InShipping;
